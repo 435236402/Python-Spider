@@ -7,9 +7,9 @@ import json
 
 class Tencent(object):
     def __init__(self):
-        self.base_url = "http://hr.tencent.com/position.php?&start="
+        self.base_url = "http://hr.tencent.com/position.php?&start=0"
         self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"}
-        #self.page = 0
+        self.page = 1
         self.item_list = []
 
     def send_request(self, full_url):
@@ -44,6 +44,15 @@ class Tencent(object):
 
             # 保存每条职位信息
             self.item_list.append(item)
+        # 查找是否是最后一页
+        # 如果是最后一页,函数返回True
+        # 如果不是最后一页,则不做处理
+        if soup.find("a", {"class": "noactive", "id": "next"}):
+            return True
+
+        # 提取下一页链接,并返回链接
+        next_link = 'http://hr.tencent.com/' + soup.find("a", {"id": "next"}).get("href")
+        return next_link
 
     def write_page(self):
         """写入数据"""
@@ -57,12 +66,26 @@ class Tencent(object):
         #     f.write(json_str)
 
     def start_work(self):
-        for page in range(0, 31, 10):
-            full_url = self.base_url + str(page)
-            html = self.send_request(full_url)
-            if html:
-                print '正在写入第%d'  % (page / 10 + 1)
-                self.parse_page(html)
+        # for page in range(0, 31, 10):
+        #     full_url = self.base_url + str(page)
+        #     html = self.send_request(full_url)
+        #     if html:
+        #         print '正在写入第%d' % (page / 10 + 1)
+        #         self.parse_page(html)
+        # self.write_page()
+        html = self.send_request(self.base_url)
+        while True:
+            print '[INFO]:正在处理%d页面...' % self.page
+            # 解析html响应,并接收self.parse_page()的返回值
+            next_link = self.parse_page(html)
+            # 如果next_link 为True 表示到了最后一页,则退出循环
+            if next_link == True:
+                break
+            else:
+                # 否则继续发送下一页链接请求,并接收返回html响应
+                html = self.send_request(next_link)
+                self.page += 1
+
         self.write_page()
 
 
