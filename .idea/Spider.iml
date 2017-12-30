@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/mySpider" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Tencent_spider/Tencent" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 2.7.14 (/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
